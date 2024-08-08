@@ -22,14 +22,15 @@ class FoodService:
 
     @handle_request
     async def get_foods(
-        self,
-        context: ApplicationContext,
-        is_vegan: Optional[bool] = None,
-        is_special: Optional[bool] = None,
+            self,
+            context: ApplicationContext,
+            is_vegan: Optional[bool] = None,
+            is_special: Optional[bool] = None,
     ) -> Sequence[Food]:
         stmt = (
             select(FoodCategory)
             .join(Food, Food.category_id == FoodCategory.id)
+            .where(Food.is_publish.is_(True))
             .group_by(FoodCategory.id)
         )
         if is_vegan is not None:
@@ -41,7 +42,7 @@ class FoodService:
 
     @handle_request
     async def create_food(
-        self, context: ApplicationContext, data: CreateFoodSchema
+            self, context: ApplicationContext, data: CreateFoodSchema
     ) -> Food:
         food = Food(**data.model_dump())
         context.session.add(food)
@@ -50,7 +51,7 @@ class FoodService:
 
     @handle_request
     async def update_food(
-        self, context: ApplicationContext, data: UpdateFoodSchema, id: int
+            self, context: ApplicationContext, data: UpdateFoodSchema, id: int
     ) -> Food:
         food = await validate_food(context.session, instance_id=id)
         update_instance_fields(food, new_fields=data.model_dump())
@@ -58,7 +59,7 @@ class FoodService:
 
     @handle_request
     async def patch_food(
-        self, context: ApplicationContext, data: PatchFoodSchema, id: int
+            self, context: ApplicationContext, data: PatchFoodSchema, id: int
     ) -> Food:
         food = await validate_food(context.session, instance_id=id)
         if data.name is not None:
