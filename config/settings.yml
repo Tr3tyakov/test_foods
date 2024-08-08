@@ -1,0 +1,54 @@
+default:
+  NAME: REGIONS
+  PORT: 8088
+  HOST: 0.0.0.0
+  WORKERS: 4
+  CORS_ORIGINS: [ "*" ]
+
+  DEBUG: false
+  RELOADED: false
+  LIFESPAN: on
+
+  POSTGRES:
+    echo: false
+    echo_pool: false
+    driver: postgresql+asyncpg
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+    database: food_db
+    pool_pre_ping: true
+    pool_recycle: 3000
+
+  LOGGING:
+    version: 1
+    disable_existing_loggers: false
+    formatters:
+      default:
+        format: '[%(asctime)s] %(levelname)-8s# %(filename)s[LINE:%(lineno)d] %(message)s'
+    handlers:
+      console:
+        level: INFO
+        class: logging.StreamHandler
+        formatter: default
+        stream: ext://sys.stdout
+      error:
+        level: ERROR
+        class: logging.StreamHandler
+        formatter: default
+        stream: ext://sys.stderr
+    loggers:
+      default:
+        level: DEBUG
+        handlers: [ console, error ]
+    root:
+      level: DEBUG
+      handlers: [ console, error ]
+
+
+
+
+testing:
+  POSTGRES:
+    database: test_foods
